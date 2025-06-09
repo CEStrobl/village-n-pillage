@@ -1,0 +1,49 @@
+*{
+	margin: 0px;
+}
+
+:root{
+	--red: #d35656;
+	--orange: #e36526;
+	--yellow: #ffd703;
+	--green: #7feb96;
+	--lblue: #9cdcfe;
+	--dblue: #569cd6;
+	--purple: #907bda;
+	--pink: #fc9cc6;
+	--black: #1f1f1f;
+}
+
+body{
+	font-family:sans-serif;
+}
+
+h1, h2, h3, h4 {
+	padding: 10px;
+	margin-bottom: 10px;
+}
+
+.gamelog{
+	display: flex;
+	flex-direction: column;
+
+	width: 100%;
+	min-height: 80%;
+	height: 800px;
+	padding: 10px;
+
+	font-family:monospace !important;
+	font-size: 24px;
+
+	background-color: var(--black);
+	color:white;
+	
+	.red{color:var(--red)}
+	.orange{color:var(--orange)}
+	.yellow{color:var(--yellow)}
+	.green{color:var(--green)}
+	.lblue{color:var(--lblue)}
+	.dblue{color:var(--dblue)}
+	.purple{color:var(--purple)}
+	.pink{color:var(--pink)}
+}
