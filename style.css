@@ -3,12 +3,17 @@
 }
 
 :root{
+	--dred: #842c2c;
 	--red: #d35656;
+	--lred: #f9baba;
 	--orange: #e36526;
 	--yellow: #ffd703;
-	--green: #7feb96;
-	--lblue: #9cdcfe;
-	--dblue: #569cd6;
+	--dgreen: #3aa752;
+	--green: #6be485;
+	--lgreen: #b3debd;
+	--lblue: #b7dcef;
+	--blue: #569cd6;
+	--dblue: #2e6491;
 	--purple: #907bda;
 	--pink: #fc9cc6;
 	--black: #1f1f1f;
@@ -24,8 +29,6 @@ h1, h2, h3, h4 {
 }
 
 .gamelog{
-	display: flex;
-	flex-direction: column;
 
 	width: 100%;
 	min-height: 80%;
@@ -39,10 +42,15 @@ h1, h2, h3, h4 {
 	color:white;
 	
 	.red{color:var(--red)}
+	.lred{color:var(--lred)}
+	.dred{color:var(--dred)}
 	.orange{color:var(--orange)}
 	.yellow{color:var(--yellow)}
+	.dgreen{color:var(--dgreen)}
 	.green{color:var(--green)}
+	.lgreen{color:var(--lgreen)}
 	.lblue{color:var(--lblue)}
+	.blue{color:var(--blue)}
 	.dblue{color:var(--dblue)}
 	.purple{color:var(--purple)}
 	.pink{color:var(--pink)}

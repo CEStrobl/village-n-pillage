@@ -1,3 +1,46 @@
+class Player {
+	constructor(id, name, role) {
+		this.id = id;
+		this.name = name;
+		this.alive = true;
+
+		this.role = role;
+		this.tag = "";
+
+		// Night action state
+		this.hasUsedAbility = false;
+		this.target = null;
+		this.disabled = false;
+		this.protected = false;
+
+		// Knowledge tracking
+		this.knowledge = {
+			peacefulPlayers: [],
+			hostilePairs: [],
+			hostileCount: 0,
+			deadPlayers: []
+		};
+	}
+
+	display() {
+		if(this.tag === "") {
+			let colorMap = {
+				Peaceful: ["lgreen", "green"],
+				Hostile: ["lred", "red"],
+				Neutral: ["lblue", "blue"]
+			};
+	
+			let [color1, color2] = colorMap[this.role.alignment] || ["lgray", "gray"];
+			let trimmedName = this.name.slice(0, 5);
+			let trimmedRole = this.role.name.slice(0, 5).padEnd(5, ".");
+			return `<span class="${color2}">[${trimmedRole}]</span> <span class="${color1}">${trimmedName}</span>`;
+		}
+		return this.tag;
+
+
+	}
+}
+
 const Roles = {
 	Farmer: {
 		name: "Farmer",
@@ -5,8 +48,23 @@ const Roles = {
 		nightAction: 0,
 		appearsAs: "Peaceful",
 		winCondition: "standard",
-		notes: "Learns two players who are Peaceful at the start."
+		notes: "Learns two players who are Peaceful at the start.",
+		action: (thisPlayer, players) => {
+			let revealed = players
+				.filter(p => p.id !== thisPlayer.id && p.role.appearsAs === "Peaceful")
+				.slice(0, 2);
+			
+			revealed.forEach(player =>
+				print(`${thisPlayer.display()} learned ${player.display()} is Peaceful.`)
+			);
+
+			thisPlayer.knowledge.peacefulPlayers.push(...revealed);
+			thisPlayer.hasUsedAbility = true;
+			
+			return revealed;
+		}
 	},
+
 	Cleric: {
 		name: "Cleric",
 		alignment: "Peaceful",
@@ -113,16 +171,5 @@ const Roles = {
 	}
 };
 
-class Player {
-	constructor(id, name, role) {
-		this.id = id;
-		this.name = name;
-		this.role = role;
-		this.alive = true;
-		this.hasUsedAbility = false;
-		this.target = null;
-		this.revealed = false;
-		this.knownAlignment = null;
-	}
-}
+
 
