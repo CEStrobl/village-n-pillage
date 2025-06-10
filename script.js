@@ -40,6 +40,12 @@ function assignRandomRoles(playerNames, roleList) {
 	});
 }
 
+
+function initTurnOrder(players) {
+	// select turn order by role.priority
+	players.sort((a, b) => a.role.priority - b.role.priority);
+}
+
 const allRoleObjects = Object.values(Roles);
 
 const playerNames = ["Charlotte", "Caroline", "Westin", "Hudson", "Bella", "Lacey", "Caleb"];
@@ -63,15 +69,8 @@ while (!endGameCondition) {
 	// Night Phase
 	print("===== NIGHT " + (counter) + " =====");
 	gamePlayers.forEach(player => {
-		if (player.alive && player.role.nightAction || counter === 0) {
-			
-			// farmer
-			if (player.role.name === "Farmer") {
-				const revealedPlayers = player.role.action(player, gamePlayers);
-			}
-			// Here you would implement the logic for each player's night action
-			// For example, if player.role.nightAction === "protect", then protect a target
-		}
+	
+
 	});
 
 

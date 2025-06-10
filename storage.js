@@ -11,6 +11,7 @@ class Player {
 		this.hasUsedAbility = false;
 		this.target = null;
 		this.disabled = false;
+		this.vexed = false;
 		this.protected = false;
 
 		// Knowledge tracking
@@ -45,9 +46,8 @@ const Roles = {
 	Farmer: {
 		name: "Farmer",
 		alignment: "Peaceful",
-		nightAction: 0,
+		priority: 30,
 		appearsAs: "Peaceful",
-		winCondition: "standard",
 		notes: "Learns two players who are Peaceful at the start.",
 		action: (thisPlayer, players) => {
 			let revealed = players
@@ -68,106 +68,93 @@ const Roles = {
 	Cleric: {
 		name: "Cleric",
 		alignment: "Peaceful",
-		nightAction: "protect",
 		appearsAs: "Peaceful",
-		winCondition: "standard",
-		notes: "Each night, protect one player from death."
+		notes: "Each night, protect one player from death.",
+		priority: -2
 	},
 	Blacksmith: {
 		name: "Blacksmith",
 		alignment: "Peaceful",
-		nightAction: "revealAttacker",
 		appearsAs: "Peaceful",
-		winCondition: "standard",
-		notes: "If your chosen player is attacked, attacker is revealed."
+		notes: "If your chosen player is attacked, attacker is revealed.",
+		priority: 3
 	},
 	Allay: {
 		name: "Allay",
 		alignment: "Peaceful",
-		nightAction: "revive",
 		appearsAs: "Peaceful",
-		winCondition: "standard",
-		notes: "Once per game, revive a dead player (fails if Hostile)."
+		notes: "Once per game, revive a dead player (fails if Hostile).",
+		priority: 20
 	},
 	Cartographer: {
 		name: "Cartographer",
 		alignment: "Peaceful",
-		nightAction: "track",
 		appearsAs: "Peaceful",
-		winCondition: "standard",
-		notes: "Each night, see who a player targeted."
+		notes: "Each night, see who a player targeted.",
+		priority: 50
 	},
 	Librarian: {
 		name: "Librarian",
 		alignment: "Peaceful",
-		nightAction: "checkHostilePair",
 		appearsAs: "Peaceful",
-		winCondition: "standard",
-		notes: "Choose two players. Learn if at least one is Hostile."
+		notes: "Choose two players. Learn if at least one is Hostile.",
+		priority: 5
 	},
 	IronGolem: {
 		name: "Iron Golem",
 		alignment: "Peaceful",
-		nightAction: "protectKillOnce",
 		appearsAs: "Peaceful",
-		winCondition: "standard",
-		notes: "Protects a player. Kills their attacker once per game."
+		notes: "Protects a player. Kills their attacker once per game.",
+		priority: -1
 	},
 	WanderingTrader: {
 		name: "Wandering Trader",
 		alignment: "Peaceful",
-		nightAction: "countHostiles",
 		appearsAs: "Hostile",
-		winCondition: "standard",
-		notes: "Knows how many Hostiles have died. Appears Hostile."
+		notes: "Knows how many Hostiles have died. Appears Hostile.",
+		priority: -3
 	},
 	Nitwit: {
 		name: "Nitwit",
 		alignment: "Neutral",
-		nightAction: null,
 		appearsAs: "Peaceful",
-		winCondition: "executed",
-		notes: "Wins only if executed (not killed other ways)."
+		notes: "Wins only if executed (not killed other ways).",
+		priority: 40
 	},
 	Witch: {
 		name: "Witch",
 		alignment: "Neutral",
-		nightAction: "blockAbility",
 		appearsAs: "Hostile",
-		winCondition: "surviveToFinal3",
-		notes: "Blocks one player's action each night. Wins if survives to final 3."
+		notes: "Blocks one player's action each night. Wins if survives to final 3.",
+		priority: -6
 	},
 	Vindicator: {
 		name: "Vindicator",
 		alignment: "Hostile",
-		nightAction: "kill",
 		appearsAs: "Hostile",
-		winCondition: "eliminatePeacefuls",
-		notes: "Kills a player each night."
+		notes: "Kills a player each night.",
+		priority: 0
 	},
 	Pillager: {
 		name: "Pillager",
 		alignment: "Hostile",
-		nightAction: null,
 		appearsAs: "Hostile",
-		winCondition: "eliminatePeacefuls",
-		notes: "Knows Vindicator. Gains kill ability if they die."
+		notes: "Knows Vindicator. Gains kill ability if they die.",
+		priority: 1
 	},
 	Vex: {
 		name: "Vex",
 		alignment: "Hostile",
-		nightAction: "redirect",
 		appearsAs: "Hostile",
-		winCondition: "eliminatePeacefuls",
-		notes: "Redirects a player's action to a random target."
+		notes: "Redirects a player's action to a random target.",
+		priority: -5
 	},
 	Evoker: {
 		name: "Evoker",
 		alignment: "Hostile",
-		nightAction: "copyDead",
 		appearsAs: "Hostile",
-		winCondition: "eliminatePeacefuls",
-		notes: "Each night, use a dead player's ability."
+		notes: "Each night, use a dead player's ability.",
+		priority: -4
 	}
 };
 
