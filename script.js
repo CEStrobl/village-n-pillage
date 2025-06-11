@@ -46,32 +46,30 @@ function initTurnOrder(players) {
 	players.sort((a, b) => a.role.priority - b.role.priority);
 	return players;
 }
-
 const allRoleObjects = Object.values(Roles);
-
 const playerNames = ["Charlotte", "Caroline", "Westin", "Hudson", "Bella", "Lacey", "Caleb"];
+const gamePlayers = initTurnOrder(assignRandomRoles(playerNames, allRoleObjects));
 
-const gamePlayers = initTurnOrder(assignRandomRoles(playerNames, allRoleObjects))
-
-// console.log("Game Players:", gamePlayers);
+const game = {
+	endGameCondition: false,
+	counter: 0,
+	deathHappened: false,
+	deadPlayers: [],
+}
 
 print("Game Players:");
 gamePlayers.forEach(player => {
 	print(player.display());
 });
 
-let endGameCondition = false;
-
-let counter = 0;
-
 // day & night cycle
-while (!endGameCondition) {	
+while (!game.endGameCondition) {	
 
 	// Night Phase
-	print("===== NIGHT " + (counter) + " =====");
+	print("===== NIGHT " + (game.counter) + " =====");
 	gamePlayers.forEach(player => {
 
-		if(counter == 0) {
+		if(game.counter == 0) {
 
 			// if the player is alive, use their night action
 			if (player.role.name == "Farmer") {
@@ -85,13 +83,11 @@ while (!endGameCondition) {
 
 		}
 		
-	
-
 	});
 
-	counter++;
+	game.counter++;
 	// Day Phase
-	print("===== DAY " + "  " + " " + (counter) + " =====");
+	print("===== DAY " + "  " + " " + (game.counter) + " =====");
 
 	//register dead players
 	gamePlayers.forEach(player => {
@@ -99,15 +95,25 @@ while (!endGameCondition) {
 			print(player.display() + " has died.");
 			player.alive = false;
 			player.dying = false; // reset dying status
+			game.deathHappened = true;
 		}
 	});
 
+	if (game.deathHappened) {
+		print(`The villagers are shocked!!`);
+
+	} else {
+		print(`The villagers are relieved`)
+	}
 
 
 
 
 
-	if(counter === 5) {
-		endGameCondition = true;
+
+
+
+	if(game.counter === 5) {
+		game.endGameCondition = true;
 	}
 }

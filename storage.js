@@ -21,7 +21,11 @@ class Player {
 		this.memory = {
 			peacefulPlayers: [],
 			hostilePlayers: [],
-			hostileCount: 0
+			hostileCount: 0,
+			memoryCount: () => {
+				return peacefulPlayers.length + hostilePlayers.length + hostileCount;
+			}
+
 		};
 	}
 
@@ -41,6 +45,10 @@ class Player {
 		return this.tag;
 
 
+	}
+
+	memoryMatch(a, b, array) {
+		return arraysEqual(a.memory.array, b.memory.array)
 	}
 
 	selectTarget(players, alignment) {
@@ -82,6 +90,78 @@ class Player {
 
 		const selectedTarget = availableTargets.length > 0 ? availableTargets[Math.floor(Math.random() * availableTargets.length)] : null;
 		return selectedTarget;
+	}
+
+	rollSuccess() {
+		// Generate a random number between 0 and 1
+		const roll = Math.random(); // Math.random() returns a float from 0 (inclusive) to 1 (exclusive)
+
+		if (roll < 0.25) {
+			return false;
+		} else {
+			return true;
+		}
+	}
+
+	talkToPlayer(player) {
+		// roll success chance
+
+		if (this.memory.memoryCount() > 0 || (this.memoryMatch(this, player, peacefulPlayers) || this.memoryMatch(this, player, hostilePlayers))){
+
+			if(this.rollSuccess()) {
+	
+				let trust = false;
+	
+				
+				// check if they already know that, then trust is added
+				player.memory.peacefulPlayers.forEach(player => {
+					if (this.memory.peacefulPlayers.has(player)) {
+						trust = true;
+					}
+				});
+				player.memory.hostilePlayers.forEach(player => {
+					if (this.memory.hostilePlayers.has(player)) {
+						trust = true;
+					}
+				});
+				
+				// share info from peaceful players + hostile players
+				if (this.memory.peacefulPlayers.length > 0 && !this.memoryMatch(this, player, peacefulPlayers)) {
+					print(`${this.display()} tells ${player.display()} that ${this.memory.peacefulPlayers.join(", ")} are Peaceful`)
+
+					if (trust) {
+						player.memory.peacefulPlayers = [...new Set([...this.memory.peacefulPlayers, ...player.memory.peacefulPlayers])];
+						print(`${player.display()} trusts ${this.display()}`)
+					} else {
+						print(`${player.display()} doesn't trust ${this.display()}`)
+					}
+				} 
+				else if (this.memory.hostilePlayers.length > 0 && !this.memoryMatch(this, player, peacefulPlayers)) {
+					print(`${this.display()} tells ${player.display()} that ${this.memory.hostilePlayers.join(", ")} are Hostile`)
+					if (trust) {
+						player.memory.hostilePlayers = [...new Set([...this.memory.hostilePlayers, ...player.memory.hostilePlayers])];
+						print(`${player.display()} trusts ${this.display()}`)
+					} else {
+						print(`${player.display()} doesn't trust ${this.display()}`)
+					}
+				} 
+				else if (this.memory.hostileCount > 0 && this.memory.hostileCount != player.memory.hostileCount) {
+					print(`${this.display()} tells ${player.display()} that ${this.memory.hostileCount} Hostiles have died`)
+					if (trust) {
+						player.memory.hostileCount = this.memory.hostileCount;
+						print(`${player.display()} trusts ${this.display()}`)
+					} else {
+						print(`${player.display()} doesn't trust ${this.display()}`)
+					}
+				}
+	
+			} else{
+				print(`${this.display()} was unable to talk to ${player.display()}`)
+			}
+
+		}
+
+
 	}
 }
 
@@ -195,7 +275,6 @@ const Roles = {
 			targets.push(thisPlayer.selectTarget(players, "Hostile"));
 			thisPlayer.target = targets[0];
 
-			console.log(targets);
 			if (!thisPlayer.target || !targets[1]) return null;	
 
 			// learns if at least one is hostile
