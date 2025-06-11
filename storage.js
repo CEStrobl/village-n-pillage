@@ -52,21 +52,6 @@ class Player {
 	}
 
 	selectTarget(players, alignment) {
-		if (this.disabled) {
-			print(`${this.display()} is disabled and cannot select a target.`);
-			return null;
-		}
-		else if (this.vexed) {
-			// Vexed players redirect their action to a random target
-			let randomTargets = players.filter(p => p.id !== this.id && p.alive);
-			if (randomTargets.length === 0) {
-				print(`${this.display()} has no valid targets to redirect to.`);
-				return null;
-			}
-			const randomTarget = randomTargets[Math.floor(Math.random() * randomTargets.length)];
-			print(`${this.display()} is vexed and redirects their action to ${randomTarget.display()}.`);
-			return randomTarget;
-		}
 
 		// Filter available targets based on alignment
 		let availableTargets = players.filter(p => p.id !== this.id && p.alive);
@@ -89,6 +74,25 @@ class Player {
 		}
 
 		const selectedTarget = availableTargets.length > 0 ? availableTargets[Math.floor(Math.random() * availableTargets.length)] : null;
+		
+		if (this.disabled) {
+			print(`${this.display()} tried to select ${selectedTarget}, but magic caused it to fail.`);
+			return null;
+		}
+		else if (this.vexed) {
+			// Vexed players redirect their action to a random target
+			let randomTargets = players.filter(p => p.id !== this.id && p.alive);
+			if (randomTargets.length === 0) {
+				print(`${this.display()} has no valid targets to redirect to.`);
+				return null;
+			}
+			const randomTarget = randomTargets[Math.floor(Math.random() * randomTargets.length)];
+			print(`${this.display()} tried to select ${selectedTarget.display()} but redirected to ${randomTarget.display()}`);
+			this.vexed = false; // Reset vexed state after using it
+			return randomTarget;
+		}
+		
+		
 		return selectedTarget;
 	}
 
@@ -381,22 +385,9 @@ const Roles = {
 				
 			} else {
 				print(`${thisPlayer.display()} has gained the ability to kill because Vindicator is dead.`);
-	
-				const target = thisPlayer.selectTarget(players, "Peaceful");
-				if (!target) return null;
 
-				if (!target.protected && !thisPlayer.blocked) {
-					
-					target.alive = false; // Kill the target
-					print(`${thisPlayer.display()} killed ${target.display()}.`);
-					thisPlayer.target = target;
-				} else {
-					print(`${thisPlayer.display()} tried to kill ${target.display()} but it failed.`);
-				}
-	
-
+				Roles.Pillager.action(thisPlayer, players);
 			}
-
 		}
 	},
 	Vex: {
@@ -410,7 +401,7 @@ const Roles = {
 			if (!thisPlayer.target) return null;
 
 			if(!thisPlayer.blocked) {
-				thisPlayer.vexed = true; // Mark this player as vexed
+				thisPlayer.target.vexed = true; // Mark this player as vexed
 				print(`${thisPlayer.display()} vexed ${thisPlayer.target.display()}.`);
 			}
 
