@@ -21,8 +21,7 @@ class Player {
 		this.memory = {
 			peacefulPlayers: [],
 			hostilePlayers: [],
-			hostileCount: 0,
-			deadPlayers: []
+			hostileCount: 0
 		};
 	}
 
@@ -70,11 +69,8 @@ class Player {
 				availableTargets = availableTargets.filter(p => this.memory.peacefulPlayers.includes(p.id));
 			} else if (alignment === "Hostile" && this.memory.hostilePlayers.length > 0) {
 				availableTargets = availableTargets.filter(p => this.memory.hostilePlayers.includes(p.id));
-			} else if (alignment === "Random") {
-				// No need to filter, just pick a random alive player
-				availableTargets = players.filter(p => p.id !== this.id && p.alive);
 			}
-
+			
 			// for allay to select a dead player
 			else if (alignment === "Dead") {
 				// doesnt need to pull from memory since everyone knows who is dead
