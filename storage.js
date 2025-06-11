@@ -283,7 +283,10 @@ const Roles = {
 			thisPlayer.target = thisPlayer.selectTarget(players, "Peaceful");
 			if (!thisPlayer.target) return null;
 
-			thisPlayer.target.dying = true; // Kill the target
+			if (!thisPlayer.target.protected && !thisPlayer.blocked) {
+				thisPlayer.target.dying = true; // Kill the target
+			}
+
 			print(`${thisPlayer.display()} killed ${thisPlayer.target.display()}.`);
 			return thisPlayer.target;
 		}
@@ -299,19 +302,26 @@ const Roles = {
 			const vindicatorDead = players.some(p => p.role.name === "Vindicator" && !p.alive);
 
 			if (!vindicatorDead) {
-				print(`${thisPlayer.display()} cannot kill because Vindicator is still alive.`);
-				return null;
+				print(`${thisPlayer.display()} sleeps peacefully.`);
+				
+			} else {
+				print(`${thisPlayer.display()} has gained the ability to kill because Vindicator is dead.`);
+	
+				const target = thisPlayer.selectTarget(players, "Peaceful");
+				if (!target) return null;
+
+				if (!target.protected && !thisPlayer.blocked) {
+					
+					target.alive = false; // Kill the target
+					print(`${thisPlayer.display()} killed ${target.display()}.`);
+					thisPlayer.target = target;
+				} else {
+					print(`${thisPlayer.display()} tried to kill ${target.display()} but it failed.`);
+				}
+	
+
 			}
 
-			print(`${thisPlayer.display()} has gained the ability to kill because Vindicator is dead.`);
-
-			const target = thisPlayer.selectTarget(players, "Peaceful");
-			if (!target) return null;
-
-			target.alive = false; // Kill the target
-			print(`${thisPlayer.display()} killed ${target.display()}.`);
-			thisPlayer.target = target;
-			return target;
 		}
 	},
 	Vex: {
@@ -324,9 +334,11 @@ const Roles = {
 			thisPlayer.target = thisPlayer.selectTarget(players);
 			if (!thisPlayer.target) return null;
 
-			thisPlayer.vexed = true; // Mark this player as vexed
-			print(`${thisPlayer.display()} vexed ${thisPlayer.target.display()}.`);
-			return thisPlayer.target;
+			if(!thisPlayer.blocked) {
+				thisPlayer.vexed = true; // Mark this player as vexed
+				print(`${thisPlayer.display()} vexed ${thisPlayer.target.display()}.`);
+			}
+
 		}
 	},
 	Evoker: {
