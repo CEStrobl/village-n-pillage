@@ -15,6 +15,7 @@ class Player {
 		this.attacked = false;
 		this.attackedBy = null; // Player who attacked this player
 		this.dying = false;
+		this.reviving = false;
 
 
 		// memory tracking
@@ -23,10 +24,17 @@ class Player {
 			hostilePlayers: [],
 			hostileCount: 0,
 			memoryCount: () => {
-				return peacefulPlayers.length + hostilePlayers.length + hostileCount;
+				return this.memory.peacefulPlayers.length + this.memory.hostilePlayers.length + this.memory.hostileCount;
 			}
 
 		};
+
+		if (this.role.alignment == "Peaceful") {
+			this.memory.peacefulPlayers.push(this);
+		} else if (this.role.alignment == "Hostile") {
+			this.memory.hostilePlayers.push(this);
+		}
+		
 	}
 
 	display() {
@@ -46,11 +54,6 @@ class Player {
 
 
 	}
-
-	memoryMatch(a, b, array) {
-		return arraysEqual(a.memory.array, b.memory.array)
-	}
-
 	selectTarget(players, alignment) {
 
 		// Filter available targets based on alignment
@@ -73,7 +76,7 @@ class Player {
 			}
 		}
 
-		const selectedTarget = availableTargets.length > 0 ? availableTargets[Math.floor(Math.random() * availableTargets.length)] : null;
+		const selectedTarget = availableTargets.length > 0 ? availableTargets[Math.floor(Math.random() * availableTargets.length)] : this;
 		
 		if (this.disabled) {
 			print(`${this.display()} tried to select ${selectedTarget}, but magic caused it to fail.`);
@@ -110,7 +113,7 @@ class Player {
 	talkToPlayer(player) {
 		// roll success chance
 
-		if (this.memory.memoryCount() > 0 || (this.memoryMatch(this, player, peacefulPlayers) || this.memoryMatch(this, player, hostilePlayers))){
+		if (this.memory.memoryCount() > 0 || (arraysEqual(this.memory.peacefulPlayers, player.memory.peacefulPlayers) || arraysEqual(this.memory.hostilePlayers, player.memory.hostilePlayers))){
 
 			if(this.rollSuccess()) {
 	
@@ -119,19 +122,21 @@ class Player {
 				
 				// check if they already know that, then trust is added
 				player.memory.peacefulPlayers.forEach(player => {
-					if (this.memory.peacefulPlayers.has(player)) {
+					if (this.memory.peacefulPlayers.includes(player)) {
 						trust = true;
 					}
 				});
 				player.memory.hostilePlayers.forEach(player => {
-					if (this.memory.hostilePlayers.has(player)) {
+					if (this.memory.hostilePlayers.includes(player)) {
 						trust = true;
 					}
 				});
 				
 				// share info from peaceful players + hostile players
-				if (this.memory.peacefulPlayers.length > 0 && !this.memoryMatch(this, player, peacefulPlayers)) {
-					print(`${this.display()} tells ${player.display()} that ${this.memory.peacefulPlayers.join(", ")} are Peaceful`)
+				if (this.memory.peacefulPlayers.length > 0 && !arraysEqual(this.memory.peacefulPlayers, player.memory.peacefulPlayers)) {
+					print(`${this.display()} tells ${player.display()} that ${this.memory.peacefulPlayers.map(element => {
+						return element.display();
+					}).join(", ")} are Peaceful`)
 
 					if (trust) {
 						player.memory.peacefulPlayers = [...new Set([...this.memory.peacefulPlayers, ...player.memory.peacefulPlayers])];
@@ -140,8 +145,10 @@ class Player {
 						print(`${player.display()} doesn't trust ${this.display()}`)
 					}
 				} 
-				else if (this.memory.hostilePlayers.length > 0 && !this.memoryMatch(this, player, peacefulPlayers)) {
-					print(`${this.display()} tells ${player.display()} that ${this.memory.hostilePlayers.join(", ")} are Hostile`)
+				else if (this.memory.hostilePlayers.length > 0 && !arraysEqual(this.memory.hostilePlayers, player.memory.hostilePlayers)) {
+					print(`${this.display()} tells ${player.display()} that ${this.memory.hostilePlayers.map(element => {
+						return element.display();
+					}).join(", ")} are Hostile`)
 					if (trust) {
 						player.memory.hostilePlayers = [...new Set([...this.memory.hostilePlayers, ...player.memory.hostilePlayers])];
 						print(`${player.display()} trusts ${this.display()}`)

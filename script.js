@@ -66,6 +66,7 @@ gamePlayers.forEach(player => {
 while (!game.endGameCondition) {	
 
 	// Night Phase
+	print(" ")
 	print("===== NIGHT " + (game.counter) + " =====");
 	gamePlayers.forEach(player => {
 
@@ -87,7 +88,8 @@ while (!game.endGameCondition) {
 
 	game.counter++;
 	// Day Phase
-	print("===== DAY " + "  " + " " + (game.counter) + " =====");
+	print(" ")
+	print(`===== DAY  - ${game.counter} =====`);
 
 	//register dead players
 	gamePlayers.forEach(player => {
@@ -101,10 +103,27 @@ while (!game.endGameCondition) {
 
 	if (game.deathHappened) {
 		print(`The villagers are shocked!!`);
+		game.deathHappened = false;
 
 	} else {
 		print(`The villagers are relieved`)
 	}
+
+	// villager discussion
+	gamePlayers.forEach(player => {
+		if (player.alive) {
+			// talk to players on the peaceful list
+			const alivePeaceful = player.memory.peacefulPlayers.filter(p => p.alive && p !== player);
+			if (alivePeaceful.length > 0) {
+				alivePeaceful.forEach(peacefulPlayer => {
+					if(!peacefulPlayer.memory.peacefulPlayers.includes(player)) {
+						player.talkToPlayer(peacefulPlayer);
+					}
+				});
+			}
+		}
+	});
+
 
 
 
